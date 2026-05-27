@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prayerthon - United in Prayer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: black;
+            overflow: hidden;
+        }
+
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #000000 0%, #021502 50%, #000000 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .login-box {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid #FFC107;
+            width: 350px;
+            text-align: center;
+        }
+
+        .login-box h1 {
+            color: #FFC107;
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .login-box p {
+            color: #4CAF50;
+            margin-bottom: 30px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #1a1a1a;
+            border: 1px solid #2E7D32;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: #FFC107;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #2E7D32, #FFC107);
+            color: black;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .login-box button:hover {
+            transform: scale(1.02);
+        }
+
+        .secondary-btn {
+            background: transparent !important;
+            border: 1px solid #FFC107 !important;
+            color: #FFC107 !important;
+            margin-top: 10px;
+        }
+
+        .meeting-room {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            background: linear-gradient(90deg, #021502, #000000);
+            border-bottom: 1px solid #FFC107;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span:first-child {
+            font-size: 24px;
+        }
+
+        .logo span:last-child {
+            color: #FFC107;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .meeting-id {
+            color: #4CAF50;
+            font-size: 12px;
+            margin-left: 15px;
+        }
+
+        .top-bar-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .top-bar-buttons button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .top-bar-buttons button:hover {
+            color: #FFC107;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .video-grid {
+            flex: 2;
+            padding: 20px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            align-content: start;
+        }
+
+        .video-card {
+            background: linear-gradient(135deg, #0a2a0a, #000000);
+            border-radius: 12px;
+            border: 1px solid #2E7D32;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 4/3;
+        }
+
+        .video-card video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #0a0a0a;
+        }
+
+        .video-placeholder .emoji {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .video-label {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            padding: 4px 8px;
+            border-radius: 5px;
+            color: white;
+            font-size: 12px;
+        }
+
+        .speaking-indicator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 3px solid #4CAF50;
+            border-radius: 12px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .side-panel {
+            width: 350px;
+            background: rgba(0,0,0,0.95);
+            border-left: 1px solid #FFC107;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .panel-tab {
+            display: flex;
+            border-bottom: 1px solid #2E7D32;
+        }
+
+        .panel-tab button {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .panel-tab button.active {
+            background: #2E7D32;
+            color: #FFC107;
+            border-bottom: 2px solid #FFC107;
+        }
+
+        .panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .chat-message.prayer {
+            background: rgba(46, 125, 50, 0.2);
+            border-left: 3px solid #4CAF50;
+        }
+
+        .chat-message.normal {
+            background: #1a1a1a;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .chat-name {
+            color: #FFC107;
+            font-weight: bold;
+        }
+
+        .chat-time {
+            color: #666;
+        }
+
+        .chat-text {
+            color: white;
+            font-size: 14px;
+        }
+
+        .chat-input-area {
+            padding: 15px;
+            border-top: 1px solid #2E7D32;
+            display: flex;
+            gap: 10px;
+            background: #000000;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px;
+            background: #1a1a1a;
+            border: 1px solid #2E7D32;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .chat-input-area button {
+            padding: 10px 20px;
+            background: #FFC107;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .prayer-card {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #2E7D32;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .prayer-text {
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .prayer-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .prayer-author {
+            color: #4CAF50;
+        }
+
+        .amen-btn {
+            background: none;
+            border: none;
+            color: #FFC107;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 5px;
+        }
+
+        .amen-btn:hover {
+            background: rgba(255, 193, 7, 0.2);
+        }
+
+        .prayer-input {
+            margin-bottom: 15px;
+        }
+
+        .prayer-input textarea {
+            width: 100%;
+            padding: 10px;
+            background: #1a1a1a;
+            border: 1px solid #2E7D32;
+            border-radius: 8px;
+            color: white;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+
+        .prayer-input button {
+            width: 100%;
+            padding: 10px;
+            background: #2E7D32;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .verse-card {
+            background: rgba(0,0,0,0.5);
+            border-left: 3px solid #FFC107;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .verse-ref {
+            color: #FFC107;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .verse-text {
+            color: #ccc;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .bible-search {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .bible-search input {
+            flex: 1;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #2E7D32;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .bible-search button {
+            padding: 8px 15px;
+            background: #FFC107;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .controls-bar {
+            background: linear-gradient(90deg, #021502, #000000);
+            border-top: 1px solid #FFC107;
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .control-btn.red {
+            background: #dc2626;
+            color: white;
+        }
+
+        .control-btn.gray {
+            background: #374151;
+            color: white;
+        }
+
+        .control-btn.green {
+            background: #2E7D32;
+            color: white;
+        }
+
+        .control-btn.gold {
+            background: #FFC107;
+            color: black;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .reaction-panel {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: flex;
+            gap: 15px;
+            z-index: 200;
+        }
+
+        .reaction-btn {
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.1s;
+        }
+
+        .reaction-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: #2E7D32;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            animation: slideIn 0.3s ease;
+            z-index: 300;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-screen">
+    <div class="login-box">
+        <h1>🕊️ Prayerthon</h1>
+        <p>United in Prayer</p>
+        <input type="text" id="meetingId" placeholder="Meeting ID" value="PRAYER2024">
+        <input type="text" id="userName" placeholder="Your Name">
+        <button onclick="joinMeeting()">Join Prayer Meeting</button>
+        <button class="secondary-btn" onclick="demoJoin()">Demo Mode</button>
+    </div>
+</div>
+
+<div id="meetingRoom" class="meeting-room">
+    <div class="top-bar">
+        <div class="logo">
+            <span>🕊️</span>
+            <span>Prayerthon</span>
+            <span class="meeting-id" id="displayMeetingId"></span>
+        </div>
+        <div class="top-bar-buttons">
+            <button onclick="togglePanel('chat')">💬 Chat</button>
+            <button onclick="togglePanel('prayer')">📜 Prayer Wall</button>
+            <button onclick="togglePanel('bible')">📖 Bible</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div id="videoGrid" class="video-grid"></div>
+        <div id="sidePanel" class="side-panel">
+            <div class="panel-tab">
+                <button id="tabChat" class="active" onclick="switchTab('chat')">💬 Prayer Chat</button>
+                <button id="tabPrayer" onclick="switchTab('prayer')">📜 Prayer Wall</button>
+                <button id="tabBible" onclick="switchTab('bible')">📖 Bible Reader</button>
+            </div>
+            
+            <div id="chatPanel" class="panel-content">
+                <div id="chatMessages" style="flex:1; overflow-y: auto;"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Type a prayer or message..." onkeypress="if(event.key==='Enter') sendMessage()">
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+
+            <div id="prayerPanel" class="panel-content" style="display: none;">
+                <div class="prayer-input">
+                    <textarea id="prayerInput" rows="3" placeholder="Share a prayer request..."></textarea>
+                    <button onclick="addPrayer()">🙏 Post Prayer Request</button>
+                </div>
+                <div id="prayerList"></div>
+            </div>
+
+            <div id="biblePanel" class="panel-content" style="display: none;">
+                <div class="verse-card">
+                    <div class="verse-ref">John 3:16</div>
+                    <div class="verse-text">For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.</div>
+                </div>
+                <div class="bible-search">
+                    <input type="text" id="bibleSearch" placeholder="Search scripture (e.g., John 3:16)">
+                    <button onclick="searchBible()">Go</button>
+                </div>
+                <div id="bibleVerses"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls-bar">
+        <button class="control-btn gray" id="muteBtn" onclick="toggleMute()">🎤 Mute</button>
+        <button class="control-btn gray" id="videoBtn" onclick="toggleVideo()">📹 Stop Video</button>
+        <button class="control-btn gray" onclick="shareScreen()">🖥️ Share</button>
+        <button class="control-btn gray" onclick="raiseHand()">🙋 Raise Hand</button>
+        <button class="control-btn gold" onclick="showReactions()">😊 Reactions</button>
+        <button class="control-btn red" onclick="leaveMeeting()">❌ Leave</button>
+    </div>
+</div>
+
+<div id="reactionPanel" style="display: none;"></div>
+
+<script>
+    // Prayerthon - Complete JavaScript
+    let currentUser = "";
+    let currentMeetingId = "";
+    let isMuted = false;
+    let isVideoOff = false;
+    let currentTab = "chat";
+    let localStream = null;
+    let participants = [];
+    let messages = [];
+    let prayers = [];
+    let handRaised = false;
+
+    const sampleParticipants = [
+        { id: 1, name: "Pastor Sarah", isSpeaking: true, hasVideo: true },
+        { id: 2, name: "Brother Michael", isSpeaking: false, hasVideo: true },
+        { id: 3, name: "Sister Grace", isSpeaking: false, hasVideo: false },
+        { id: 4, name: "Elder James", isSpeaking: false, hasVideo: true },
+        { id: 5, name: "Deacon Peter", isSpeaking: false, hasVideo: true }
+    ];
+
+    const sampleMessages = [
+        { id: 1, user: "Pastor Sarah", text: "Welcome everyone! Let's open with prayer.", time: "10:00 AM", isPrayer: false },
+        { id: 2, user: "Sister Grace", text: "Lord, we thank you for this gathering. Bless this prayer meeting.", time: "10:01 AM", isPrayer: true },
+        { id: 3, user: "Brother Michael", text: "Amen! 🙌", time: "10:02 AM", isPrayer: false }
+    ];
+
+    const samplePrayers = [
+        { id: 1, text: "Praying for healing for my grandmother", author: "Anonymous", amens: 24 },
+        { id: 2, text: "Guidance for our youth ministry", author: "Pastor Sarah", amens: 56 },
+        { id: 3, text: "Peace in our community", author: "Brother Michael", amens: 128 }
+    ];
+
+    const bibleData = {
+        "John 3:16": "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.",
+        "Philippians 4:6-7": "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.",
+        "Matthew 18:20": "For where two or three gather in my name, there am I with them.",
+        "James 5:16": "Therefore confess your sins to each other and pray for each other so that you may be healed.",
+        "Psalm 23:1": "The Lord is my shepherd; I shall not want."
+    };
+
+    function joinMeeting() {
+        const meetingId = document.getElementById('meetingId').value;
+        const userName = document.getElementById('userName').value;
+        
+        if (!userName) {
+            alert("Please enter your name");
+            return;
+        }
+        
+        currentUser = userName;
+        currentMeetingId = meetingId;
+        
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('meetingRoom').style.display = 'flex';
+        document.getElementById('displayMeetingId').innerHTML = `Meeting ID: ${meetingId}`;
+        
+        initMeeting();
+    }
+
+    function demoJoin() {
+        document.getElementById('meetingId').value = "DEMO2024";
+        document.getElementById('userName').value = "Guest_" + Math.floor(Math.random() * 1000);
+        joinMeeting();
+    }
+
+    async function initMeeting() {
+        participants = [...sampleParticipants];
+        messages = [...sampleMessages];
+        prayers = [...samplePrayers];
+        
+        participants.unshift({ id: 0, name: currentUser, isSpeaking: false, hasVideo: !isVideoOff });
+        
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            updateVideoGrid();
+        } catch (err) {
+            console.log("Camera/mic access error:", err);
+            updateVideoGrid();
+        }
+        
+        updateChat();
+        updatePrayerWall();
+        updateBibleVerses();
+        showToast("Welcome to Prayerthon! 🕊️");
+    }
+
+    function updateVideoGrid() {
+        const grid = document.getElementById('videoGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        
+        const userCard = document.createElement('div');
+        userCard.className = 'video-card';
+        if (localStream && !isVideoOff) {
+            const video = document.createElement('video');
+            video.srcObject = localStream;
+            video.autoplay = true;
+            video.muted = true;
+            userCard.appendChild(video);
+        } else {
+            userCard.innerHTML = `<div class="video-placeholder"><div class="emoji">🙏</div><div class="name">${currentUser} (You)</div></div>`;
+        }
+        userCard.innerHTML += `<div class="video-label">${currentUser} (You) ${isMuted ? '🔇' : ''}</div>`;
+        grid.appendChild(userCard);
+        
+        participants.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            card.innerHTML = `
+                <div class="video-placeholder"><div class="emoji">${p.hasVideo ? '👤' : '🙏'}</div><div class="name">${p.name}</div></div>
+                <div class="video-label">${p.name} ${p.isSpeaking ? '🔊' : ''}</div>
+                ${p.isSpeaking ? '<div class="speaking-indicator"></div>' : ''}
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function updateChat() {
+        const container = document.getElementById('chatMessages');
+        if (!container) return;
+        container.innerHTML = '';
+        messages.forEach(msg => {
+            const div = document.createElement('div');
+            div.className = `chat-message ${msg.isPrayer ? 'prayer' : 'normal'}`;
+            div.innerHTML = `<div class="chat-header"><span class="chat-name">${msg.user}</span><span class="chat-time">${msg.time}</span></div><div class="chat-text">${msg.text}</div>`;
+            container.appendChild(div);
+        });
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if (!text) return;
+        
+        const isPrayer = text.toLowerCase().includes('pray') || text.toLowerCase().includes('lord') || text.toLowerCase().includes('god');
+        messages.push({
+            id: messages.length + 1,
+            user: currentUser,
+            text: text,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' }),
+            isPrayer: isPrayer
+        });
+        updateChat();
+        input.value = '';
+        if (isPrayer) showToast("🙏 Prayer sent!");
+    }
+
+    function updatePrayerWall() {
+        const container = document.getElementById('prayerList');
+        if (!container) return;
+        container.innerHTML = '';
+        prayers.forEach(prayer => {
+            const div = document.createElement('div');
+            div.className = 'prayer-card';
+            div.innerHTML = `<div class="prayer-text">${prayer.text}</div><div class="prayer-footer"><span class="prayer-author">— ${prayer.author}</span><button class="amen-btn" onclick="addAmen(${prayer.id})">🙌 Amen (${prayer.amens})</button></div>`;
+            container.appendChild(div);
+        });
+    }
+
+    function addPrayer() {
+        const textarea = document.getElementById('prayerInput');
+        const text = textarea.value.trim();
+        if (!text) return;
+        
+        prayers.unshift({ id: prayers.length + 1, text: text, author: currentUser, amens: 0 });
+        updatePrayerWall();
+        textarea.value = '';
+        showToast("Prayer request posted! 🙏");
+    }
+
+    function addAmen(id) {
+        const prayer = prayers.find(p => p.id === id);
+        if (prayer) { 
+            prayer.amens++; 
+            updatePrayerWall(); 
+            showToast("You said Amen! 🙌");
+        }
+    }
+
+    function updateBibleVerses() {
+        const container = document.getElementById('bibleVerses');
+        if (!container) return;
+        container.innerHTML = '';
+        for (const [ref, text] of Object.entries(bibleData)) {
+            const div = document.createElement('div');
+            div.className = 'verse-card';
+            div.innerHTML = `<div class="verse-ref">${ref}</div><div class="verse-text">${text}</div>`;
+            container.appendChild(div);
+        }
+    }
+
+    function searchBible() {
+        const search = document.getElementById('bibleSearch').value.trim();
+        if (bibleData[search]) {
+            showToast(`📖 ${search}: ${bibleData[search].substring(0, 100)}...`);
+        } else {
+            showToast("Try: John 3:16, Philippians 4:6-7, Psalm 23:1");
+        }
+    }
+
+    function switchTab(tab) {
+        currentTab = tab;
+        document.getElementById('chatPanel').style.display = tab === 'chat' ? 'flex' : 'none';
+        document.getElementById('prayerPanel').style.display = tab === 'prayer' ? 'block' : 'none';
+        document.getElementById('biblePanel').style.display = tab === 'bible' ? 'block' : 'none';
+        
+        document.getElementById('tabChat').classList.toggle('active', tab === 'chat');
+        document.getElementById('tabPrayer').classList.toggle('active', tab === 'prayer');
+        document.getElementById('tabBible').classList.toggle('active', tab === 'bible');
+    }
+
+    function togglePanel(panel) {
+        switchTab(panel);
+    }
+
+    function toggleMute() {
+        isMuted = !isMuted;
+        const btn = document.getElementById('muteBtn');
+        if (btn) btn.innerHTML = isMuted ? '🔇 Unmute' : '🎤 Mute';
+        showToast(isMuted ? "Microphone muted" : "Microphone unmuted");
+        
+        if (localStream) {
+            localStream.getAudioTracks().forEach(track => track.enabled = !isMuted);
+        }
+    }
+
+    function toggleVideo() {
+        isVideoOff = !isVideoOff;
+        const btn = document.getElementById('videoBtn');
+        if (btn) btn.innerHTML = isVideoOff ? '📹 Start Video' : '📹 Stop Video';
+        
+        if (localStream) {
+            localStream.getVideoTracks().forEach(track => track.enabled = !isVideoOff);
+        }
+        updateVideoGrid();
+        showToast(isVideoOff ? "Video turned off" : "Video turned on");
+    }
+
+    function shareScreen() {
+        showToast("Screen sharing coming soon!");
+    }
+
+    function raiseHand() {
+        handRaised = !handRaised;
+        showToast(handRaised ? "🙋 Hand raised! Leader notified." : "Hand lowered");
+        
+        messages.push({
+            id: messages.length + 1,
+            user: currentUser,
+            text: handRaised ? "🙋 Raised hand to pray" : "Lowered hand",
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' }),
+            isPrayer: false
+        });
+        updateChat();
+    }
+
+    function showReactions() {
+        let panel = document.getElementById('reactionPanel');
+        if (panel.style.display === 'flex') {
+            panel.style.display = 'none';
+            return;
+        }
+        
+        const reactions = ['🙌', '🙏', '❤️', '🎉', '✨', '🕊️', '📖', '✝️'];
+        panel.innerHTML = `<div class="reaction-panel">${reactions.map(r => `<div class="reaction-btn" onclick="sendReaction('${r}')">${r}</div>`).join('')}</div>`;
+        panel.style.display = 'flex';
+        
+        setTimeout(() => {
+            panel.style.display = 'none';
+        }, 5000);
+    }
+
+    function sendReaction(emoji) {
+        showToast(`${currentUser} sent ${emoji}`);
+        document.getElementById('reactionPanel').style.display = 'none';
+        
+        messages.push({
+            id: messages.length + 1,
+            user: currentUser,
+            text: emoji,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' }),
+            isPrayer: false
+        });
+        updateChat();
+    }
+
+    function leaveMeeting() {
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+        }
+        document.getElementById('meetingRoom').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+        showToast("You left the prayer meeting. God bless! 🙏");
+    }
+
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerText = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Simulate speaking indicator
+    setInterval(() => {
+        if (document.getElementById('meetingRoom').style.display === 'flex') {
+            participants.forEach(p => {
+                p.isSpeaking = Math.random() > 0.8;
+            });
+            updateVideoGrid();
+        }
+    }, 3000);
+
+    // Make functions global for HTML buttons
+    window.joinMeeting = joinMeeting;
+    window.demoJoin = demoJoin;
+    window.togglePanel = togglePanel;
+    window.switchTab = switchTab;
+    window.sendMessage = sendMessage;
+    window.addPrayer = addPrayer;
+    window.addAmen = addAmen;
+    window.searchBible = searchBible;
+    window.toggleMute = toggleMute;
+    window.toggleVideo = toggleVideo;
+    window.shareScreen = shareScreen;
+    window.raiseHand = raiseHand;
+    window.showReactions = showReactions;
+    window.sendReaction = sendReaction;
+    window.leaveMeeting = leaveMeeting;
+</script>
+</body>
+</html>
